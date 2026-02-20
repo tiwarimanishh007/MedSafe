@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedSafe - Home Medicine Tracker</title>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --safe: #4caf50;
+            --light: #f8f9fa;
+        }
+        
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #eef2f7;
+            color: #333;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, var(--primary), #2c5282);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        form {
+            display: grid;
+            gap: 15px;
+        }
+        
+        input, button {
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3a5a80;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background-color: var(--light);
+        }
+        
+        .expired {
+            background-color: #ffebee;
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .warning {
+            background-color: #fff8e1;
+            color: var(--warning);
+        }
+        
+        .safe {
+            background-color: #e8f5e9;
+        }
+        
+        .delete-btn {
+            background-color: #ff6b6b;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        
+        .guide-section {
+            margin-top: 30px;
+        }
+        
+        .accordion {
+            background-color: var(--light);
+            color: #333;
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            text-align: left;
+            border: none;
+            outline: none;
+            transition: 0.4s;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .active, .accordion:hover {
+            background-color: #e2e6ea;
+        }
+        
+        .panel {
+            padding: 0 15px;
+            background-color: white;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .alert {
+            background-color: var(--warning);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>MedSafe</h1>
+        <p>Track your home medicines and ensure family safety</p>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <h2>Add New Medicine</h2>
+            <form id="medicine-form">
+                <label for="medicine-name">Medicine Name:</label>
+                <input type="text" id="medicine-name" required>
+                
+                <label for="expiry-date">Expiry Date:</label>
+                <input type="date" id="expiry-date" required>
+                
+                <button type="submit">Add Medicine</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h2>Your Medicine List</h2>
+            <table id="medicine-list">
+                <thead>
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Expiry Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Filled by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="card guide-section">
+            <h2>Safe Disposal Guide</h2>
+            <button class="accordion">Why Proper Disposal Matters</button>
+            <div class="panel">
+                <p>Improper disposal of medicines can lead to environmental contamination and accidental poisoning. Expired medicines may also lose potency or become harmful.</p>
+            </div>
+            
+            <button class="accordion">Step-by-Step Disposal</button>
+            <div class="panel">
+                <ol>
+                    <li>Mix medicines with undesirable substance (coffee grounds, kitty litter)</li>
+                    <li>Place mixture in sealed container</li>
+                    <li>Remove personal information from packaging</li>
+                    <li>Dispose in household trash</li>
+                    <li>Check for local take-back programs</li>
+                </ol>
+            </div>
+            
+            <button class="accordion">Medicines Requiring Special Handling</button>
+            <div class="panel">
+                <ul>
+                    <li>Opioids and controlled substances</li>
+                    <li>Chemotherapy drugs</li>
+                    <li>Inhalers and aerosol products</li>
+                    <li>Patches and topical medications</li>
+                </ul>
+                <p>Contact your pharmacy or local waste facility for disposal instructions.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="notification" class="notification alert">
+        <span id="notification-text"></span>
+    </div>
+
+    <script>
+        // DOM Elements
+        const medicineForm = document.getElementById('medicine-form');
+        const medicineList = document.getElementById('medicine-list').querySelector('tbody');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+        
+        // Initialize medicines array from localStorage
+        let medicines = JSON.parse(localStorage.getItem('medicines')) || [];
+        
+        // Form submit handler
+        medicineForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const medicineName = document.getElementById('medicine-name').value;
+            const expiryDate = document.getElementById('expiry-date').value;
+            
+            // Add to medicines array
+            medicines.push({
+                id: Date.now(),
+                name: medicineName,
+                expiry: expiryDate,
+                added: new Date().toISOString().split('T')[0]
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('medicines', JSON.stringify(medicines));
+            
+            // Reset form
+            medicineForm.reset();
+            
+            // Update display
+            renderMedicines();
+            
+            // Show notification
+            showNotification(`Added ${medicineName} to your medicine list`);
+        });
+        
+        // Render medicines list
+        function renderMedicines() {
+            medicineList.innerHTML = '';
+            
+            medicines.forEach(medicine => {
+                const row = document.createElement('tr');
+                
+                // Calculate days until expiry
+                const expiryDate = new Date(medicine.expiry);
+                const today = new Date();
+                const timeDiff = expiryDate.getTime() - today.getTime();
+                const daysUntilExpiry = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                
+                // Determine status
+                let status = '';
+                let statusClass = '';
+                
+                if (daysUntilExpiry < 0) {
+                    status = 'Expired';
+                    statusClass = 'expired';
+                } else if (daysUntilExpiry <= 30) {
+                    status = `Expiring in ${daysUntilExpiry} days`;
+                    statusClass = 'warning';
+                } else {
+                    status = 'Valid';
+                    statusClass = 'safe';
+                }
+                
+                // Create row
+                row.innerHTML = `
+                    <td>${medicine.name}</td>
+                    <td>${medicine.expiry}</td>
+                    <td class="${statusClass}">${status}</td>
+                    <td><button class="delete-btn" data-id="${medicine.id}">Remove</button></td>
+                `;
+                
+                medicineList.appendChild(row);
+                
+                // Show notification for expiring/expired medicines
+                if (daysUntilExpiry <= 7 && daysUntilExpiry > 0) {
+                    showNotification(`Warning: ${medicine.name} expiring soon!`);
+                } else if (daysUntilExpiry < 0) {
+                    showNotification(`Alert: ${medicine.name} has expired!`);
+                }
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    deleteMedicine(id);
+                });
+            });
+        }
+        
+        // Delete medicine
+        function deleteMedicine(id) {
+            medicines = medicines.filter(medicine => medicine.id !== id);
+            localStorage.setItem('medicines', JSON.stringify(medicines));
+            renderMedicines();
+        }
+        
+        // Show notification
+        function showNotification(message) {
+            notificationText.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Accordion functionality
+        const accordions = document.getElementsByClassName("accordion");
+        
+        for (let i = 0; i < accordions.length; i++) {
+            accordions[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                const panel = this.nextElementSibling;
+                
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                } 
+            });
+        }
+        
+        // Initial render
+        renderMedicines();
+        
+        // Daily check for expiring medicines
+        setInterval(() => {
+            renderMedicines();
+        }, 24 * 60 * 60 * 1000); // Check daily
+    </script>
+</body>
+</html>
